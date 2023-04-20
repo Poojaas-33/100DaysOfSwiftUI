@@ -1,2 +1,2 @@
 # 100DaysOfSwiftUI
-I am learning SwiftUI and this is a repo to keep a track for it
+Repository for keeping a track of my SwiftUI journey
