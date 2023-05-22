@@ -7,6 +7,16 @@
 
 import SwiftUI
 
+struct FlagImage : View {
+    var number : String
+    var body : some View {
+        Image(number)
+            .renderingMode(.original)
+            .clipShape(Capsule())
+            .shadow(radius: 5)
+    }
+}
+
 struct ContentView: View {
     
     @State private var showingScore = false
@@ -65,17 +75,15 @@ struct ContentView: View {
                 
                 VStack(spacing : 15){
                     VStack {
-                        Text("Tap the flag of ").foregroundStyle(.secondary).font(.subheadline.weight(.heavy))
+                        Text("Tap the flag of ")
+                            .foregroundStyle(.secondary).font(.subheadline.weight(.heavy))
                         Text(countries[correctAns]).font(.largeTitle.weight(.semibold))
                     }
                     ForEach(0..<3) { number in
                         Button {
                             flagTapped(number)
                         } label : {
-                            Image(countries[number])
-                                .renderingMode(.original)
-                                .clipShape(Capsule())
-                                .shadow(radius: 5)
+                            FlagImage(number: countries[number])
                         }
                     }
                 }.frame(maxWidth : .infinity)
