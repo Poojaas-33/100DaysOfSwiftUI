@@ -16,8 +16,12 @@ struct ContentView: View {
     @State private var errorTitle = ""
     @State private var errorMessage = ""
     @State private var showingAlert = false
+    @State private var score = 0
     
     func startGame() {
+        
+        usedWords.removeAll()
+        score = 0
         //Find URL for start.text in our app bundle
         if let startWordURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
             //load start.text into a string
@@ -49,6 +53,11 @@ struct ContentView: View {
             return
         }
         
+        guard isAllowed(word: answer) else {
+            wordError(title: "Word is not allowed", message: "Think harder!")
+            return
+        }
+        
         guard isPossible(word: answer) else {
             wordError(title: "Word not possible", message: "You can't spell that word from '\(rootWord)'!")
             return
@@ -62,26 +71,29 @@ struct ContentView: View {
         withAnimation {
             usedWords.insert(answer,at: 0)
         }
+        
+        score = score + answer.count
+        
         newWord = ""
     }
     
     var body: some View {
         NavigationView {
-            
-            List {
-                Section {
-                    TextField("Enter your word",text: $newWord)
-                        .textInputAutocapitalization(.never)
+            VStack{
+                TextField("Enter your word",text: $newWord)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                        .padding()
+                    .textInputAutocapitalization(.never)
+                List {
+                        ForEach(usedWords, id: \.self) { word in
+                            HStack {
+                                Image(systemName: "\(word.count).circle")
+                                Text(word)
+                            }
+                        }
                 }
                 
-                Section {
-                    ForEach(usedWords, id: \.self) { word in
-                        HStack {
-                            Image(systemName: "\(word.count).circle")
-                            Text(word)
-                        }
-                    }
-                }
+                Text("Score : \(score)").font(.largeTitle)
             }
             .navigationTitle(rootWord)
             .onSubmit(addNewWord)
@@ -91,7 +103,14 @@ struct ContentView: View {
             } message: {
                 Text(errorMessage)
             }
+            .toolbar{
+                Button("New Game",action: startGame)
+            }
         }
+    }
+    
+    func isAllowed(word: String) -> Bool {
+        word.count >= 3 && word != rootWord
     }
     
     func isOriginal(word: String) -> Bool {
