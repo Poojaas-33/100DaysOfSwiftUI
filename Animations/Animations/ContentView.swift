@@ -8,28 +8,24 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var scaleValue = 1.0
+    @State private var animationAmount = 1.0
     
     var body: some View {
-        Button("Tap ME"){
-            //scaleValue += 1
-        }
-        .padding(50)
-        .background(.red)
-        .foregroundColor(.white)
-        .clipShape(Circle())
-        //.scaleEffect(scaleValue)
-        //.blur(radius: (scaleValue-1)*2)
-        .overlay (
-            Circle()
-                .stroke(.red)
-                .scaleEffect(scaleValue)
-                .opacity(2-scaleValue)
-                .animation(.easeInOut(duration: 1)
-                    .repeatForever(autoreverses:false), value: scaleValue)
-        )
-        .onAppear{
-            scaleValue = 2
+        print(animationAmount)
+        
+        return VStack {
+            Stepper("Scale amount",value: $animationAmount.animation(),in:1...10)
+            
+            Spacer()
+            
+            Button("Tap Me") {
+                animationAmount += 1
+            }
+            .padding(40)
+            .background(.red)
+            .foregroundColor(.white)
+            .clipShape(Circle())
+            .scaleEffect(animationAmount)
         }
     }
 }
