@@ -25,6 +25,8 @@ struct ContentView: View {
     @State private var incorrectMessage = false
     @State private var gameOver = false
     @State private var questionCount = 0
+    @State private var buttonTapped = -1
+    @State private var animationAmount = 0.0
     
     @State private var countries = ["Estonia","France","Germany","Ireland","Italy","Monaco","Nigeria","Poland","Russia","Spain","UK","US"].shuffled()
     @State private var correctAns = Int.random(in: 0...2)
@@ -37,6 +39,7 @@ struct ContentView: View {
     }
     
     func flagTapped(_ number: Int ){
+        buttonTapped = number
         if number == correctAns {
             scoreTitle = "Correct"
             score += 1
@@ -46,10 +49,12 @@ struct ContentView: View {
             scoreTitle = "Wrong! That is the flag of \(countries[number])"
             incorrectMessage = true
         }
-        showingScore = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                showingScore = true}
     }
     
     func askQuestion() {
+        buttonTapped = -1
         countries.shuffle();
         correctAns = Int.random(in: 0...2)
         questionCount += 1
@@ -82,8 +87,16 @@ struct ContentView: View {
                     ForEach(0..<3) { number in
                         Button {
                             flagTapped(number)
+                            withAnimation {
+                                animationAmount += 360
+                            }
                         } label : {
                             FlagImage(number: countries[number])
+                                .rotation3DEffect(.degrees(buttonTapped == number ? animationAmount : 0.0), axis: (x: 0, y: 1, z: 0))
+                                .opacity(buttonTapped == number || buttonTapped == -1 ? 1 : 0.3)
+                                .scaleEffect(buttonTapped == number || buttonTapped == -1 ? 1 : 0.5)
+                                .animation(.default, value: buttonTapped)
+                                
                         }
                     }
                 }.frame(maxWidth : .infinity)
