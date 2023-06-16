@@ -14,17 +14,35 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(expenses.items) { item in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(item.name).font(.headline)
-                            Text(item.type)
+                Section {
+                    ForEach(expenses.personalItem) { item in
+                        HStack {
+                            if(item.type == "Personal") {
+                                Text(item.name).font(.headline)
+                                Spacer()
+                                Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                                    .foregroundColor(item.amount <= 10 ? .green : item.amount<=100 ? .yellow : .red)
+                            }
                         }
-                        
-                        Spacer()
-                        Text(item.amount, format: .currency(code: "USD"))
-                    }
-                }.onDelete(perform: removeItems)
+                    }.onDelete(perform: removeItems)
+                } header: {
+                    Text("Personal")
+                }
+                
+                Section {
+                    ForEach(expenses.businessItem) { item in
+                        HStack {
+                            if(item.type == "Business") {
+                                Text(item.name).font(.headline)
+                                Spacer()
+                                Text(item.amount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                                    .foregroundColor(item.amount <= 10 ? .green : item.amount<=100 ? .yellow : .red )
+                            }
+                        }
+                    }.onDelete(perform: removeItems)
+                } header: {
+                    Text("Business")
+                }
             }.toolbar {
                 Button {
                     showingAddExpense = true
